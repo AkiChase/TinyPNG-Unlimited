@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# custom
+/.idea
+/bin/tmp
+/bin/keys.json
+/bin/error_files.json
