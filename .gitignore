@@ -129,7 +129,8 @@ dmypy.json
 .pyre/
 
 # custom
-/.idea
-/bin/tmp
-/bin/keys.json
-/bin/error_files.json
+.idea
+bin/tmp
+bin/keys.json
+bin/error_files.json
+bin/tasks.py
