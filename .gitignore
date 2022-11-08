@@ -132,5 +132,5 @@ dmypy.json
 .idea
 bin/tmp
 bin/keys.json
-bin/error_files.json
+bin/*.json
 bin/tasks.py

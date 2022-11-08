@@ -12,8 +12,8 @@ from requests import Session
 from tqdm import tqdm
 from tqdm.utils import CallbackIOWrapper
 
-from .errors import CompressException
 import tinypng_unlimited  # 不使用from import防止交叉引用
+from tinypng_unlimited.errors import CompressException
 
 
 class TinyImg:
@@ -40,7 +40,7 @@ class TinyImg:
         tinify.proxy = proxy
 
     @classmethod
-    def to_file_save(cls, path, url, timeout=60):
+    def to_file_save(cls, path, url, timeout=30):
         """
         安全的下载文件并保存到指定路径
         :param path: 路径
@@ -94,7 +94,7 @@ class TinyImg:
             return f.read(4) == b'tiny'
 
     @classmethod
-    def upload_from_file(cls, f, timeout=45) -> str:
+    def upload_from_file(cls, f, timeout=60) -> str:
         """
         重写库方法添加超时参数，上传图片，返回云端压缩后图片链接
         :param timeout: 服务器响应超时时间，注意此时间在每次服务器做出任何响应时重置，所以不是整个请求和响应的时间
@@ -107,12 +107,15 @@ class TinyImg:
         return res.headers.get('location')
 
     @classmethod
-    def compress_from_file(cls, path, new_path, check_compressed=True) -> tuple:
+    def compress_from_file(cls, path, new_path, check_compressed=True,
+                           upload_timeout=None, download_timeout=None) -> tuple:
         """
         压缩图片文件
         :param path: 文件路径
         :param new_path: 新文件路径
         :param check_compressed: 是否检查压缩标记
+        :param upload_timeout: 上传响应超时时间，默认60s
+        :param download_timeout: 下载响应超时时间，默认30s
         :return: (旧大小，新大小，压缩到原来的百分比)
         """
         old_size = os.path.getsize(path)
@@ -135,7 +138,7 @@ class TinyImg:
                     logger.info('正在上传图片至云端压缩[{}]: {}', cls._byte_converter(old_size), file_name)
                     with open(path, "rb") as f:
                         wrapped_file = CallbackIOWrapper(bar.update, f, "read")
-                        url = cls.upload_from_file(wrapped_file)
+                        url = cls.upload_from_file(wrapped_file, timeout=upload_timeout)
                     # 上传完成得到图片链接，并更新了api调用次数
                     with cls._lock:
                         # 新旧秘钥切换时，使用旧秘钥上传图片的响应会覆盖新秘钥的值，所以需要刷新一下
@@ -143,7 +146,7 @@ class TinyImg:
                             tinify.validate()
                         logger.success('云端压缩成功，正在下载: {}', file_name)
                         logger.info('当前秘钥可用性: [{}/500]', cls.compression_count())
-                cls.to_file_save(new_path, url)
+                cls.to_file_save(new_path, url, timeout=download_timeout)
                 new_size = os.path.getsize(new_path)
                 return file_name, old_size, new_size, f'{round(100 * new_size / old_size, 2)}%'
             except Exception as e:
@@ -154,11 +157,13 @@ class TinyImg:
                     raise CompressException('超出压缩重试次数', {'path': path, 'err': e})
 
     @classmethod
-    def compress_from_file_list(cls, file_list, new_dir=None) -> dict:
+    def compress_from_file_list(cls, file_list, new_dir=None, upload_timeout=None, download_timeout=None) -> dict:
         """
         批量压缩多个文件
         :param file_list: 文件路径列表
         :param new_dir: 输出文件夹
+        :param upload_timeout: 上传响应超时时间，默认60s
+        :param download_timeout: 下载响应超时时间，默认30s
         :return: 压缩情况报告
         """
 
@@ -182,7 +187,8 @@ class TinyImg:
                     file_name = os.path.basename(old_path)
                     # 默认下覆盖原文件
                     new_path = os.path.abspath(os.path.join(new_dir, file_name)) if new_dir else old_path
-                    future_list.append(pool.submit(cls.compress_from_file, old_path, new_path))
+                    future_list.append(pool.submit(cls.compress_from_file, old_path, new_path,
+                                                   upload_timeout, download_timeout))
 
                 for future in as_completed(future_list):
                     try:

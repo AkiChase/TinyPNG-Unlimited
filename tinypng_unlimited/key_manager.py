@@ -7,8 +7,8 @@ import requests
 from loguru import logger
 from requests import Timeout
 
-from .errors import SnapMailException, ApplyKeyException
-from .snapmail import SnapMail
+from tinypng_unlimited.errors import SnapMailException, ApplyKeyException
+from tinypng_unlimited.snapmail import SnapMail
 
 
 class KeyManager:
@@ -51,12 +51,53 @@ class KeyManager:
         """
         秘钥保存到本地
         """
-        path = os.path.join(cls.working_dir, '../keys.json')
+        path = os.path.abspath(os.path.join(cls.working_dir, 'keys.json'))
         with open(path, 'w', encoding='utf-8') as f:
             json.dump({
                 "available": cls.Keys.available,
                 "unavailable": cls.Keys.unavailable
             }, f, ensure_ascii=False, indent=4, separators=(',', ':'))
+
+    @staticmethod
+    def get_api_count(s, key):
+        url = 'https://api.tinify.com/shrink'
+        retry = 0
+        logger.info('正在获取秘钥可用性信息...', key)
+        while True:
+            try:
+                res = s.post(url, auth=('api', key))
+                return int(res.headers.get('compression-count'))
+            except Exception as e:
+                retry += 1
+                if retry > 3:  # 最多再重试3次（总共4次）
+                    raise e
+                time.sleep(1)
+
+    @classmethod
+    def rearrange_keys(cls):
+        path = os.path.abspath(os.path.join(cls.working_dir, 'keys.json'))
+        if not os.path.exists(path):
+            keys = {"available": [], "unavailable": []}
+        else:
+            with open(path, 'r', encoding='utf-8') as f:
+                keys = json.load(f)
+        out = {"available": [], "unavailable": []}
+
+        with requests.Session() as s:
+            for type_name in ('available', 'unavailable'):
+                for index, key in enumerate(keys[type_name]):
+                    count = cls.get_api_count(s, key)
+                    out['available' if count < 490 else 'unavailable'].append((keys[type_name][index], count))
+
+        for type_name in ('available', 'unavailable'):
+            out[type_name].sort(key=lambda item: item[1], reverse=True)
+            logger.info('统计信息:', type_name)
+            logger.info(json.dumps(out[type_name], indent=2))
+            out[type_name] = [x[0] for x in out[type_name]]
+
+        cls.Keys.load(out)
+        cls.store_key()
+        logger.success('秘钥已按统计信息重新排列')
 
     @classmethod
     def next_key(cls) -> str:
@@ -69,6 +110,8 @@ class KeyManager:
             logger.warning('可用秘钥少于3条，优先申请新秘钥')
             cls.apply_store_key()
 
+        if not len(cls.Keys.available):
+            raise Exception('无可用秘钥，请申请后重试')
         cls.Keys.unavailable.append(cls.Keys.available.pop(0))
         cls.store_key()
         logger.debug('秘钥已切换，等待载入')
@@ -144,7 +187,6 @@ class KeyManager:
                 key = cls._apply_api_key()
                 cls.Keys.available.append(key)
                 cls.store_key()
-                time.sleep(3)
             except Timeout as e:
                 logger.error("请求超时: {} - {}({})", e.request.method, e.request.url, bytes.decode(e.request.content))
             except Exception as e:

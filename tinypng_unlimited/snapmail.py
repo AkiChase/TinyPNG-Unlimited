@@ -3,7 +3,7 @@ from random import sample
 from loguru import logger
 from requests import Session
 
-from .errors import SnapMailException
+from tinypng_unlimited.errors import SnapMailException
 
 
 class SnapMail:
