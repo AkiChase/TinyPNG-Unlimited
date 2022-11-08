@@ -1,0 +1,27 @@
+Use json create the tasks file like "my_tasks.json".
+The json data must be an object with keys: "file_tasks", "dir_tasks".
+Using both of them or one of them is ok.
+
+Create the tasks file, and then you can use "python main.py tasks path\to\my_tasks.json"
+or "TinyPNG-Unlimited.exe tasks path\to\my_tasks.json" to compress images conveniently.
+
+By the way, the compressed images will cover themselves.
+
+
+=======================================================
+example 1:
+{
+	"file_tasks": ["D:\\1.jpg", "D:\\2.jpg"],
+	"dir_tasks": ["D:\\dir1", "D:\\dir2"]
+}
+=======================================================
+example 2:
+{
+	"file_tasks": ["D:\\1.jpg", "D:\\2.jpg"]
+}
+=======================================================
+example 3:
+{
+	"dir_tasks": ["D:\\dir1", "D:\\dir2"]
+}
+=======================================================
