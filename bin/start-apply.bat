@@ -1,1 +1,0 @@
-..\venv\Scripts\python.exe apply_keys.py

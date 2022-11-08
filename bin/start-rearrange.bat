@@ -1,1 +1,0 @@
-..\venv\Scripts\python.exe rearrange_keys.py slow
