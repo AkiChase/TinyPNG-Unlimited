@@ -8,7 +8,7 @@ TinyPNG使用将WebP, PNG and JPEG图片进行智能有损压缩，该压缩对�
 
 通过邮箱免费申请TinyPNG官方API秘钥，可以获得每月500张图片的免费压缩次数（不限文件大小）。
 
-因此，通过API进行图片批量压缩是相对理想的形式，[申请地址]([TinyPNG – Developer API](https://tinypng.com/developers))
+因此，通过API进行图片批量压缩是相对理想的形式，[TinyPNG – Developer API](https://tinypng.com/developers)
 
 ### tinypng-unlimited
 
