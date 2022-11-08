@@ -70,13 +70,16 @@ TinyPNG使用将WebP, PNG and JPEG图片进行智能有损压缩，该压缩对�
     TinyPNG-Unlimited.exe dir "path\to\tasks.json"
 	```
 	tasks-emample.json: 
+	
 	```json
 	{
-		"file_tasks": ['D:\\1.jpg', 'D:\\2.jpg'],
-		"dir_tasks": ['D:\\dir1', 'D:\\dir2']
+		"file_tasks": ["D:\\1.jpg", "D:\\2.jpg"],
+		"dir_tasks": ["D:\\dir1", "D:\\dir2"]
 	}
 	```
-
+	
+	参考 [tasks-help.txt](https://github.com/ruchuby/TinyPNG-Unlimited/blob/develop/bin/tasks-help.txt)
+	
 4. 申请API秘钥
 
    程序运行时会自动申请秘钥，但也可以通过此方式再次申请
