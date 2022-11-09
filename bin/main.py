@@ -24,7 +24,7 @@ def init(proxy=None):
         os.removedirs(tmp_dir)  # 清空之前的临时下载文件夹
 
     if not len(KeyManager.Keys.available):
-        logger.error('无可用秘钥，请稍后重试')
+        logger.error('无可用密钥，请稍后重试')
         exit()
 
     TinyImg.set_key(KeyManager.Keys.available[0])

@@ -6,7 +6,7 @@
 
 TinyPNG使用将WebP, PNG and JPEG图片进行智能有损压缩，该压缩对视觉的影响几乎不可见，但是能显著压缩文件体积，以节省空间储存，方便网络传输。
 
-通过邮箱免费申请TinyPNG官方API秘钥，可以获得每月500张图片的免费压缩次数（不限文件大小）。
+通过邮箱免费申请TinyPNG官方API密钥，可以获得每月500张图片的免费压缩次数（不限文件大小）。
 
 因此，通过API进行图片批量压缩是相对理想的形式，[申请地址]([TinyPNG – Developer API](https://tinypng.com/developers))
 
@@ -14,12 +14,12 @@ TinyPNG使用将WebP, PNG and JPEG图片进行智能有损压缩，该压缩对�
 
 > 本项目仅供技术研究使用，请勿用于任何商业及非法用途，任何后果作者概不负责！
 
-**本项目可自动申请API秘钥，以多线程形式批量进行TinyPNG压缩，并附带上传、下载和总体任务的进度条，旨在提供最方便快捷的云压缩功能**
+**本项目可自动申请API密钥，以多线程形式批量进行TinyPNG压缩，并附带上传、下载和总体任务的进度条，旨在提供最方便快捷的云压缩功能**
 
 本项目实现的功能：
 
-1. 通过多个临时邮箱自动申请TinyPNG官方API秘钥，以实现**无限制使用TinyPNG**
-2. **自动切换不可用秘钥**（即将达到500次免费压缩的秘钥）
+1. 通过多个临时邮箱自动申请TinyPNG官方API密钥，以实现**无限制使用TinyPNG**
+2. **自动切换不可用密钥**（即将达到500次免费压缩的密钥）
 3. 多线程上传下载图片，**加快批量压缩进度**
 4. 可选**使用代理**上传、下载图片
 5. 可选**递归子文件夹**，可通过**正则匹配**需要压缩的文件名
@@ -80,17 +80,17 @@ TinyPNG使用将WebP, PNG and JPEG图片进行智能有损压缩，该压缩对�
 	
 	参考 [tasks-help.txt](https://github.com/ruchuby/TinyPNG-Unlimited/blob/develop/bin/tasks-help.txt)
 	
-4. 申请API秘钥
+4. 申请API密钥
 
-   程序运行时会自动申请秘钥，但也可以通过此方式再次申请
+   程序运行时会自动申请密钥，但也可以通过此方式再次申请
 	```bash
     path\to\your\python main.py apply 4
     TinyPNG-Unlimited.exe apply 4
 	```
    
-5. 重新排列API秘钥顺序
+5. 重新排列API密钥顺序
 
-	依次请求获取本地储存的API秘钥压缩次数，重新排列秘钥顺序
+	依次请求获取本地储存的API密钥压缩次数，重新排列密钥顺序
 	
 	```bash
 	path\to\your\python main.py rearrange

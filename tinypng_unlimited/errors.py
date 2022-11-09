@@ -23,11 +23,11 @@ class SnapMailException(CustomException):
 
 class ApplyKeyException(CustomException):
     """
-    申请新秘钥相关错误
+    申请新密钥相关错误
     """
 
     def __init__(self, msg: str, detail: Any = None):
-        super().__init__('申请新秘钥相关错误', msg, detail)
+        super().__init__('申请新密钥相关错误', msg, detail)
 
 
 class ProxyManagerException(CustomException):
