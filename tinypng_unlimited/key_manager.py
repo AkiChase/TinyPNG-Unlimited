@@ -26,18 +26,18 @@ class KeyManager:
     @classmethod
     def init(cls, working_dir):
         """
-        秘钥初始化，请在所有需要秘钥的操作之前执行
+        密钥初始化，请在所有需要密钥的操作之前执行
         """
         cls.working_dir = working_dir
         cls.load_keys()
         if len(cls.Keys.available) < 3:
-            logger.warning('当前可用秘钥少于3条，优先申请新秘钥')
+            logger.warning('当前可用密钥少于3条，优先申请新密钥')
             cls.apply_store_key()
 
     @classmethod
     def load_keys(cls):
         """
-        加载本地存储的秘钥
+        加载本地存储的密钥
         """
         path = os.path.abspath(os.path.join(cls.working_dir, 'keys.json'))
         if not os.path.exists(path):
@@ -49,7 +49,7 @@ class KeyManager:
     @classmethod
     def store_key(cls):
         """
-        秘钥保存到本地
+        密钥保存到本地
         """
         path = os.path.abspath(os.path.join(cls.working_dir, 'keys.json'))
         with open(path, 'w', encoding='utf-8') as f:
@@ -62,7 +62,7 @@ class KeyManager:
     def get_api_count(s, key):
         url = 'https://api.tinify.com/shrink'
         retry = 0
-        logger.info('正在获取秘钥可用性信息...', key)
+        logger.info('正在获取密钥可用性信息...', key)
         while True:
             try:
                 res = s.post(url, auth=('api', key))
@@ -97,30 +97,30 @@ class KeyManager:
 
         cls.Keys.load(out)
         cls.store_key()
-        logger.success('秘钥已按统计信息重新排列')
+        logger.success('密钥已按统计信息重新排列')
 
     @classmethod
     def next_key(cls) -> str:
         """
-        删除当前秘钥并返回下一条
+        删除当前密钥并返回下一条
         """
         cls.load_keys()
 
         if len(cls.Keys.available) < 3:
-            logger.warning('可用秘钥少于3条，优先申请新秘钥')
+            logger.warning('可用密钥少于3条，优先申请新密钥')
             cls.apply_store_key()
 
         if not len(cls.Keys.available):
-            raise Exception('无可用秘钥，请申请后重试')
+            raise Exception('无可用密钥，请申请后重试')
         cls.Keys.unavailable.append(cls.Keys.available.pop(0))
         cls.store_key()
-        logger.debug('秘钥已切换，等待载入')
+        logger.debug('密钥已切换，等待载入')
         return cls.Keys.available[0]
 
     @classmethod
     def _apply_api_key(cls) -> str:
         """
-        申请新秘钥
+        申请新密钥
         """
         with requests.Session() as session:
             # 注册新账号（发送确认邮件）
@@ -148,7 +148,7 @@ class KeyManager:
                 raise ApplyKeyException('注册链接提取失败', e)
             logger.info('注册链接提取成功')
 
-            # 访问控制台，生成秘钥
+            # 访问控制台，生成密钥
             retry = 0
             while True:
                 try:
@@ -157,25 +157,25 @@ class KeyManager:
                     headers = {
                         'authorization': f"Bearer {auth}"
                     }
-                    session.post('https://api.tinify.com/api/keys', headers=headers)  # 添加新秘钥
-                    res = session.get('https://api.tinify.com/api', headers=headers)  # 获取秘钥
+                    session.post('https://api.tinify.com/api/keys', headers=headers)  # 添加新密钥
+                    res = session.get('https://api.tinify.com/api', headers=headers)  # 获取密钥
                     key = res.json()['keys'][-1]['key']
                     break
                 except Exception as e:
                     retry += 1
                     if retry <= 3:
-                        logger.error('新秘钥生成失败, 3s后进行第{}次重试 {}', retry, e)
+                        logger.error('新密钥生成失败, 3s后进行第{}次重试 {}', retry, e)
                         time.sleep(3)
                     else:
-                        raise ApplyKeyException(f'超出重试次数, 新秘钥生成失败: {url}', e)
+                        raise ApplyKeyException(f'超出重试次数, 新密钥生成失败: {url}', e)
 
-            logger.success('新秘钥生成成功')
+            logger.success('新密钥生成成功')
             return key
 
     @classmethod
     def apply_store_key(cls, times=None):
         """
-        申请并保存秘钥
+        申请并保存密钥
         """
 
         # 允许申请次数（包括失败重试）
@@ -183,7 +183,7 @@ class KeyManager:
         while times > 0:
             try:
                 times -= 1
-                logger.info('正在申请新秘钥，剩余次数: {}', times)
+                logger.info('正在申请新密钥，剩余次数: {}', times)
                 key = cls._apply_api_key()
                 cls.Keys.available.append(key)
                 cls.store_key()
