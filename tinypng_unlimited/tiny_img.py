@@ -187,7 +187,7 @@ class TinyImg:
                     file_name = os.path.basename(old_path)
                     # 默认下覆盖原文件
                     new_path = os.path.abspath(os.path.join(new_dir, file_name)) if new_dir else old_path
-                    future_list.append(pool.submit(cls.compress_from_file, old_path, new_path,
+                    future_list.append(pool.submit(cls.compress_from_file, old_path, new_path, True,
                                                    upload_timeout, download_timeout))
 
                 for future in as_completed(future_list):
