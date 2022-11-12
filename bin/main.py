@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import time
+from shutil import rmtree
 
 from loguru import logger
 from tqdm import tqdm
@@ -21,7 +22,7 @@ def init(proxy=None):
 
     tmp_dir = os.path.join(os.path.dirname(cur_file_path), 'tmp')
     if os.path.exists(tmp_dir):
-        os.removedirs(tmp_dir)  # 清空之前的临时下载文件夹
+        rmtree(tmp_dir)  # 清空之前的临时下载文件夹
 
     if not len(KeyManager.Keys.available):
         logger.error('无可用密钥，请稍后重试')
@@ -140,6 +141,7 @@ def character_drawing():
 
 def check_error_files(proxy=None):
     path = os.path.abspath(os.path.join(os.path.dirname(cur_file_path), 'error_files.json'))
+    old_path = os.path.join(os.path.dirname(path), 'old_error_files.json')
     try:
         with open(path, encoding='utf-8') as f:
             file_list = json.load(f)
@@ -147,12 +149,13 @@ def check_error_files(proxy=None):
         return
 
     if isinstance(file_list, list) and len(file_list) > 0:
-        logger.info('检测到压缩失败图片路径列表, 1s后开始压缩')
-        os.remove(path)
-        compress_cover_file_list(file_list, proxy)
-        logger.success('文件列表压缩完成')
-        character_drawing()
-        os.system('echo \7')  # 输出到终端时可以发出蜂鸣作为一种提醒
+        if len(input('检测到压缩失败图片路径列表，是否对该列表进行压缩？(输入任意内容则压缩)')):
+            os.rename(path, old_path)
+            compress_cover_file_list(file_list, proxy)
+            logger.success('文件列表压缩完成')
+            character_drawing()
+            os.remove(old_path)
+            os.system('echo \7')  # 输出到终端时可以发出蜂鸣作为一种提醒
 
 
 def command_dir(args):

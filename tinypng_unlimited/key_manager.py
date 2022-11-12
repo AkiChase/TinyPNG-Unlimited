@@ -62,7 +62,7 @@ class KeyManager:
     def get_api_count(s, key):
         url = 'https://api.tinify.com/shrink'
         retry = 0
-        logger.info('正在获取密钥可用性信息...', key)
+        logger.info('正在获取密钥可用性信息... : {}', key)
         while True:
             try:
                 res = s.post(url, auth=('api', key))
