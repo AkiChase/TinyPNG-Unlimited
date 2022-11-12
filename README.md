@@ -1,5 +1,9 @@
 # tinypng-unlimited
 
+**自动申请API秘钥、多线程、带上传下载进度条的TinyPNG批量云压缩命令行工具**
+
+掘金文章：[无限制、多线程、带进度条的TinyPNG云压缩工具[Python]](https://juejin.cn/post/7163847609134612488)
+
 ## 介绍
 
 ### TinyPNG
